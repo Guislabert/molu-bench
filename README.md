@@ -4,7 +4,7 @@ Evaluation harness and compute plan for **Chinese content-production doctrine fo
 
 <div align="center">
 
-[![CI](https://img.shields.io/github/actions/workflow/status/Guislabert/molu-bench/ci.yml?branch=main&label=CI&color=34A853)](../../actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/Guislabert/molu-bench/ci.yml?branch=main&label=CI&color=34A853)](https://github.com/Guislabert/molu-bench/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License%3A%20Apache--2.0-FBBC05.svg)](LICENSE)
 [![Items](https://img.shields.io/badge/dev%20set-20%20items-4285F4.svg)](data/dev.jsonl)
 [![Compute](https://img.shields.io/badge/planned-69.6%20GPU--h-9AA0A6.svg)](compute/GPU-BUDGET.md)
