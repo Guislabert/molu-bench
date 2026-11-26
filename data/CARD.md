@@ -49,7 +49,7 @@ Why these four and not ten: each maps to a named module in molu and to a failure
 ## Known limitations
 
 - **20 items is a smoke test, not a benchmark.** Confidence intervals on 5 items per task are wide by construction; `results/README.md` states the gating numbers before any run.
-- **The dev set currently saturates.** Measured: `poolside/laguna-xs-2.1` scores 0.843 (`raw`) / 0.878 (`doctrine`) on these 20 items. A rubric a small model nearly aces cannot detect the effect H1 is about, so it is a harness smoke test until harder items exist. Recorded as amend 3 in `results/README.md` rather than quietly re-tuned.
+- **The dev set currently saturates** (7 of 20 items score 1.00 in every run, see [`ITEM-AUDIT.md`](ITEM-AUDIT.md); the fix is planned in [`EXPANSION.md`](EXPANSION.md)). Measured: `poolside/laguna-xs-2.1` scores 0.843 (`raw`) / 0.878 (`doctrine`) on these 20 items. A rubric a small model nearly aces cannot detect the effect H1 is about, so it is a harness smoke test until harder items exist. Recorded as amend 3 in `results/README.md` rather than quietly re-tuned.
 - **Length caps only apply where the prompt states a budget.** After the first run, every item with a `max_units` check got an explicit limit in its prompt; before that, the rubric penalised brevity nobody asked for.
 - **Deterministic rubrics under-reward good answers that took an unexpected route.** Mitigation: publish per-check failures, not just the total, so a reviewer can see which checks are brittle.
 - **Single annotator** (the author) wrote the dev set. Inter-annotator agreement is an open item for the 5,000-item set.

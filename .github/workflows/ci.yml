@@ -56,6 +56,11 @@ jobs:
           test -s /tmp/TABLE.md
           diff -q /tmp/TABLE.md results/TABLE.md && echo "committed table is reproducible"
 
+      - name: Item audit reproduces
+        run: |
+          python3 scripts/itemcheck.py --results results --out /tmp/ITEM-AUDIT.md
+          diff -q /tmp/ITEM-AUDIT.md data/ITEM-AUDIT.md && echo "committed audit is reproducible"
+
       - name: Budget reproduces
         run: |
           python3 compute/budget.py --scenario full --json > /tmp/budget.json

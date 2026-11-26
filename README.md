@@ -40,8 +40,8 @@ A negative result here is still a result: "16k curated units of Chinese content 
 | [`protocol.md`](protocol.md) | pre-registration: hypotheses, prompt conditions, publish rules (canonical: [`results/README.md`](results/README.md)) |
 | [`gpu-hours.md`](gpu-hours.md) | the bill: 8.5 / 69.6 / 84.2 / 726 GPU-hours (canonical: [`compute/GPU-BUDGET.md`](compute/GPU-BUDGET.md)) |
 | [`harness/`](harness) | scorer, bootstrap CI, model adapters, and the fixed prompt packs |
-| [`data/`](data) | 20-item dev set, dataset card, rubric schema |
-| [`scripts/`](scripts) | `build_sft.py` (CPU), `sft_lora.py` (GPU), `plot_loss.py` (SVG curve) |
+| [`data/`](data) | 20-item dev set, dataset card, rubric schema, per-item audit, expansion plan |
+| [`scripts/`](scripts) | `build_sft.py` (CPU), `sft_lora.py` (GPU), `plot_loss.py` (SVG curve), `itemcheck.py` (per-item difficulty audit) |
 | [`configs/`](configs) | pre-registered hyperparameters as a diffable file |
 | [`docs/RUNBOOK.md`](docs/RUNBOOK.md) | no GPU → API baseline for <$5 → one A100 → first table |
 | [`docs/GRANT.md`](docs/GRANT.md) | one-page compute request: what exists, what the hours buy, what ships either way |
@@ -121,7 +121,7 @@ Full table with per-task 95% CIs: [`results/TABLE.md`](results/TABLE.md), regene
 
 Three things this run actually told us, and they are not flattering:
 
-1. **The dev set saturates.** A *small* model scores 0.84 with no doctrine prompt. A rubric that a weak model nearly aces cannot detect the improvement H1 is about — the dev set needs harder items before it can support any claim.
+1. **The dev set saturates.** A *small* model scores 0.84 with no doctrine prompt. The per-item audit ([`data/ITEM-AUDIT.md`](data/ITEM-AUDIT.md)) is blunter: **7 of 20 items are 1.00 in every run**, free points that measure nothing. A rubric a weak model nearly aces cannot detect the improvement H1 is about — the expansion to 400 items is planned in [`data/EXPANSION.md`](data/EXPANSION.md), with the calibration target (reference model 0.45–0.65, ≤ 5% saturated) stated before the items exist.
 2. **`doctrine − raw = +0.035`, with CIs that overlap almost entirely.** On 20 items that is indistinguishable from noise. Reported because the pre-registration says so.
 3. **Two rubric bugs the first real run exposed**, both fixed and logged as amendments in [`results/README.md`](results/README.md): a ban on the string `第一` was failing a correct answer for containing `第一人称`, and length caps were punishing answers whose prompt never stated a length budget.
 
