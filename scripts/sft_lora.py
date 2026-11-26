@@ -27,18 +27,41 @@ import pathlib
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--train", required=True, help="chat-format jsonl from scripts/build_sft.py")
-    ap.add_argument("--model", default="Qwen/Qwen3-8B")
     ap.add_argument("--out", required=True)
-    ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--epochs", type=float, default=3.0)
-    ap.add_argument("--lr", type=float, default=1e-4)
-    ap.add_argument("--lora-r", type=int, default=16)
-    ap.add_argument("--lora-alpha", type=int, default=32)
-    ap.add_argument("--max-length", type=int, default=4096)
-    ap.add_argument("--batch-size", type=int, default=2)
-    ap.add_argument("--grad-accum", type=int, default=8)
+    ap.add_argument("--config", default="", help="JSON config, e.g. configs/lora-qwen3-8b.json")
+    # Tunables default to None so the config file can supply them; explicit CLI
+    # flags always win, which keeps the committed config the visible baseline.
+    ap.add_argument("--model")
+    ap.add_argument("--seed", type=int)
+    ap.add_argument("--epochs", type=float)
+    ap.add_argument("--lr", type=float)
+    ap.add_argument("--lora-r", type=int)
+    ap.add_argument("--lora-alpha", type=int)
+    ap.add_argument("--max-length", type=int)
+    ap.add_argument("--batch-size", type=int)
+    ap.add_argument("--grad-accum", type=int)
     ap.add_argument("--dry-run", action="store_true", help="validate data + config, then exit")
     args = ap.parse_args()
+
+    defaults = dict(model="Qwen/Qwen3-8B", seed=0, epochs=3.0, lr=1e-4, lora_r=16,
+                    lora_alpha=32, max_length=4096, batch_size=2, grad_accum=8)
+    cfg_from_file: dict = {}
+    if args.config:
+        cfg_path = pathlib.Path(args.config)
+        if not cfg_path.exists():
+            raise SystemExit(f"no such config: {cfg_path}")
+        raw = json.loads(cfg_path.read_text(encoding="utf-8"))
+        cfg_from_file = {k: v for k, v in raw.items() if not k.startswith("_")}
+        print(f"config: {cfg_path}")
+        # seed stays a CLI concern: one config, three runs, one seed per run.
+        seeds = cfg_from_file.pop("seeds", None)
+        if seeds:
+            print(f"  config lists seeds {seeds}; pick one with --seed")
+
+    for field, fallback in defaults.items():
+        value = getattr(args, field)
+        if value is None:
+            setattr(args, field, cfg_from_file.get(field, fallback))
 
     train = pathlib.Path(args.train)
     if not train.exists():
@@ -105,8 +128,8 @@ def main() -> int:
         per_device_train_batch_size=args.batch_size,
         gradient_accumulation_steps=args.grad_accum,
         learning_rate=args.lr,
-        lr_scheduler_type="cosine",
-        warmup_ratio=0.03,
+        lr_scheduler_type=cfg_from_file.get("lr_scheduler_type", "cosine"),
+        warmup_ratio=cfg_from_file.get("warmup_ratio", 0.03),
         bf16=True,
         logging_steps=10,
         save_strategy="no",

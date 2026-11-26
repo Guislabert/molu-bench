@@ -117,7 +117,27 @@ docker run --gpus all --rm -p 8001:8000 \
 
 Then the same harness, pointed at `:8001`, `--model-name Qwen3-8B-lora-seed0`, `--prompt-mode raw`.
 
-### 6. What the hours actually cost
+### 6. Keep the artifacts a write-up needs (2 minutes)
+
+Three things make a fine-tuning claim checkable, and all three are cheap to save:
+
+```bash
+# 1. the config it was actually run with (the committed default, plus any override)
+python3 scripts/sft_lora.py --config configs/lora-qwen3-8b.json --train /workspace/sft.jsonl \
+  --out /workspace/adapters/qwen3-8b-seed0 --seed 0 > /workspace/adapters/run.log 2>&1
+
+# 2. the loss curve, as an SVG you can commit
+python3 scripts/plot_loss.py --log /workspace/adapters/qwen3-8b-seed0/trainer_state.json \
+  --out results/loss-qwen3-8b-seed0.svg --title "Qwen3-8B LoRA · seed 0"
+
+# 3. the before/after eval — the only number that matters
+python3 harness/cli.py --model local --base-url http://localhost:8001/v1 \
+  --model-name Qwen3-8B-lora-seed0 --prompt-mode raw --out results/qwen3-8b-lora-seed0-raw.json
+```
+
+An adapter without a config, a curve and a before/after table is an unverifiable claim. Save all three or the run did not happen.
+
+### 7. What the hours actually cost
 
 From `compute/budget.py` (recompute, do not trust this table):
 

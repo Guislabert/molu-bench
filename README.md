@@ -33,6 +33,19 @@ Written down before any numbers exist, in [`results/README.md`](results/README.m
 
 A negative result here is still a result: "16k curated units of Chinese content doctrine do not move an 8B model past a good prompt" is a finding worth publishing, and it is cheaper than a fine-tuning bill.
 
+## Where everything lives
+
+| path | what it is |
+|---|---|
+| [`protocol.md`](protocol.md) | pre-registration: hypotheses, prompt conditions, publish rules (canonical: [`results/README.md`](results/README.md)) |
+| [`gpu-hours.md`](gpu-hours.md) | the bill: 8.5 / 69.6 / 84.2 / 726 GPU-hours (canonical: [`compute/GPU-BUDGET.md`](compute/GPU-BUDGET.md)) |
+| [`harness/`](harness) | scorer, bootstrap CI, model adapters, and the fixed prompt packs |
+| [`data/`](data) | 20-item dev set, dataset card, rubric schema |
+| [`scripts/`](scripts) | `build_sft.py` (CPU), `sft_lora.py` (GPU), `plot_loss.py` (SVG curve) |
+| [`configs/`](configs) | pre-registered hyperparameters as a diffable file |
+| [`docs/RUNBOOK.md`](docs/RUNBOOK.md) | no GPU → API baseline for <$5 → one A100 → first table |
+| [`results/`](results) | protocol + measured outputs; ships empty on purpose |
+
 ## What runs today
 
 ```bash
@@ -86,6 +99,15 @@ python3 scripts/sft_lora.py  --train sft.jsonl --out adapters/seed0 --seed 0 --d
 ```
 
 `build_sft.py` validates rows, estimates tokens per epoch, and refuses to write when the row count drifts more than 5% from the 16,227 the GPU bill assumes — a silent 300-row dataset would make every downstream hour wrong. `sft_lora.py` is the GPU half and is not covered by CI; its data validation is reachable through `--dry-run` and is tested.
+
+A training run leaves three artifacts a write-up needs: the adapter directory, the committed config it was run with, and the loss curve.
+
+```bash
+python3 scripts/plot_loss.py --log adapters/seed0/trainer_state.json \
+  --out results/loss-qwen3-8b-seed0.svg --title "Qwen3-8B LoRA · seed 0"
+```
+
+No matplotlib: the curve is generated as SVG by a stdlib script, so it can be regenerated on any machine and diffed in review.
 
 ## Compute
 

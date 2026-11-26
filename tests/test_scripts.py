@@ -118,3 +118,50 @@ class TestSftLoraDryRun(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class TestPlotLoss(unittest.TestCase):
+    PLOT = ROOT / "scripts" / "plot_loss.py"
+
+    def setUp(self):
+        self.tmp = pathlib.Path(tempfile.mkdtemp())
+
+    def run_plot(self, path: pathlib.Path, out: pathlib.Path) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            [sys.executable, str(self.PLOT), "--log", str(path), "--out", str(out)],
+            capture_output=True, text=True, cwd=ROOT,
+        )
+
+    def test_trainer_state_log_history(self):
+        state = self.tmp / "trainer_state.json"
+        state.write_text(json.dumps({"log_history": [
+            {"step": 10, "loss": 2.4}, {"step": 20, "loss": 1.8}, {"step": 30, "loss": 1.4},
+        ]}), encoding="utf-8")
+        out = self.tmp / "loss.svg"
+        res = self.run_plot(state, out)
+        self.assertEqual(res.returncode, 0, res.stderr)
+        body = out.read_text(encoding="utf-8")
+        self.assertIn("<polyline", body)
+        self.assertEqual(body.count(","), body.count(","))  # svg is non-empty
+        self.assertIn("loss 2.4000 → 1.4000", body)
+
+    def test_jsonl_input(self):
+        log = self.tmp / "log.jsonl"
+        log.write_text('{"step":1,"loss":2.0}\n{"step":2,"loss":1.0}\n', encoding="utf-8")
+        out = self.tmp / "loss.svg"
+        res = self.run_plot(log, out)
+        self.assertEqual(res.returncode, 0, res.stderr)
+        self.assertIn("-50.0%", res.stdout)
+
+    def test_plain_log_regex_fallback(self):
+        log = self.tmp / "train.log"
+        log.write_text("{'loss': 2.5, 'grad_norm': 1.1}\n{'loss': 1.5, 'grad_norm': 0.9}\n",
+                       encoding="utf-8")
+        res = self.run_plot(log, self.tmp / "loss.svg")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        self.assertIn("2 points", res.stdout)
+
+    def test_no_loss_is_an_error_not_an_empty_figure(self):
+        cfg = ROOT / "configs" / "lora-qwen3-8b.json"
+        res = self.run_plot(cfg, self.tmp / "loss.svg")
+        self.assertNotEqual(res.returncode, 0)
+        self.assertFalse((self.tmp / "loss.svg").exists(), "must not write a figure with no data")
