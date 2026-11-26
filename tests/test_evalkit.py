@@ -176,3 +176,63 @@ class TestRealDevSet(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class TestRemoteModelRobustness(unittest.TestCase):
+    """Provider behaviours that used to crash or silently inflate scores."""
+
+    def make(self, payload):
+        from evalkit import OpenAICompatModel
+        return OpenAICompatModel(
+            name="fake", base_url="http://fake/v1", model="fake-1",
+            transport=lambda url, body, headers, timeout: payload,
+        )
+
+    def test_reasoning_only_response_becomes_blank_not_a_free_pass(self):
+        model = self.make({"choices": [{"message": {"content": None,
+                                                    "reasoning_content": "thinking..."},
+                                        "finish_reason": "length"}]})
+        out = model.generate("x")
+        self.assertEqual(out, "", "reasoning text must not be used as the answer")
+        self.assertTrue(model.last_meta["reasoning_only"])
+        self.assertEqual(model.last_meta["finish_reason"], "length")
+
+    def test_null_content_does_not_crash_scoring(self):
+        model = self.make({"choices": [{"message": {"content": None}, "finish_reason": "length"}]})
+        item = Item(id="i", task="writer", prompt="p",
+                    checks=[{"kind": "none_of", "value": ["保证"], "points": 1}])
+        row = score_output(item, model.generate("p"))
+        self.assertEqual(row["points"], 0.0)
+        self.assertTrue(row["blank"])
+
+    def test_normal_response_records_meta(self):
+        model = self.make({"choices": [{"message": {"content": "答案"}, "finish_reason": "stop"}],
+                           "model": "fake-1"})
+        self.assertEqual(model.generate("x"), "答案")
+        self.assertEqual(model.last_meta["finish_reason"], "stop")
+        self.assertFalse(model.last_meta["reasoning_only"])
+        self.assertEqual(model.last_meta["model_returned"], "fake-1")
+
+    def test_transport_error_is_raised_not_swallowed(self):
+        from evalkit import OpenAICompatModel
+        model = OpenAICompatModel(name="fake", base_url="http://f/v1", model="m",
+                                  transport=lambda *a: (_ for _ in ()).throw(SystemExit("HTTP 404: body")))
+        with self.assertRaises(SystemExit):
+            model.generate("x")
+
+
+class TestRunCounters(unittest.TestCase):
+    def test_truncation_and_reasoning_counters(self):
+        from evalkit import OpenAICompatModel
+        payloads = [
+            {"choices": [{"message": {"content": "答案"}, "finish_reason": "stop"}]},
+            {"choices": [{"message": {"content": None, "reasoning_content": "t"}, "finish_reason": "length"}]},
+            {"choices": [{"message": {"content": "答"}, "finish_reason": "length"}]},
+        ]
+        it = iter(payloads)
+        model = OpenAICompatModel(name="fake", base_url="http://f/v1", model="m",
+                                  transport=lambda *a: next(it))
+        item = Item(id="i", task="writer", prompt="p", checks=[{"kind": "min_units", "value": 1}])
+        report = run(model, [item, item, item], verbose=False)
+        self.assertEqual(report["blank_responses"], 1)
+        self.assertEqual(report["reasoning_only_responses"], 1)
+        self.assertEqual(report["truncated_responses"], 2)

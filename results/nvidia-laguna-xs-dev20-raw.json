@@ -1,0 +1,782 @@
+{
+  "model": "poolside/laguna-xs-2.1",
+  "prompt_mode": "raw",
+  "items": 20,
+  "elapsed_s": 38.06,
+  "blank_responses": 0,
+  "truncated_responses": 1,
+  "reasoning_only_responses": 0,
+  "summary": [
+    {
+      "task": "guard",
+      "n": 5,
+      "score": 0.8833,
+      "ci95": [
+        0.7667,
+        1.0
+      ],
+      "checks_passed": 17,
+      "checks_total": 19
+    },
+    {
+      "task": "insight",
+      "n": 5,
+      "score": 0.7533,
+      "ci95": [
+        0.5867,
+        0.92
+      ],
+      "checks_passed": 16,
+      "checks_total": 21
+    },
+    {
+      "task": "topic",
+      "n": 5,
+      "score": 0.9,
+      "ci95": [
+        0.8,
+        1.0
+      ],
+      "checks_passed": 18,
+      "checks_total": 20
+    },
+    {
+      "task": "writer",
+      "n": 5,
+      "score": 0.8333,
+      "ci95": [
+        0.6333,
+        1.0
+      ],
+      "checks_passed": 15,
+      "checks_total": 17
+    }
+  ],
+  "rows": [
+    {
+      "id": "insight-01",
+      "task": "insight",
+      "points": 3.0,
+      "max_points": 5.0,
+      "ratio": 0.6,
+      "blank": false,
+      "checks": [
+        {
+          "label": "标注人群维度",
+          "ok": false,
+          "points": 0.0
+        },
+        {
+          "label": "写明想要的进展",
+          "ok": false,
+          "points": 0.0
+        },
+        {
+          "label": "抓住报价环节",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "max_units",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "不越界给建议",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 32,
+      "output": "一线城市，28岁，行政，月薪6000元。  \n希望接私活，做剪辑工作。  \n报价犹豫，错失合适机会。",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "insight-02",
+      "task": "insight",
+      "points": 2.0,
+      "max_points": 4.0,
+      "ratio": 0.5,
+      "blank": false,
+      "checks": [
+        {
+          "label": "明确冲突结构",
+          "ok": false,
+          "points": 0.0
+        },
+        {
+          "label": "识别对方角色",
+          "ok": false,
+          "points": 0.0
+        },
+        {
+          "label": "max_units",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "不给方案",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 18,
+      "output": "我想辞职做独立开发，但怕伤到父亲的面子。",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "insight-03",
+      "task": "insight",
+      "points": 5.0,
+      "max_points": 5.0,
+      "ratio": 1.0,
+      "blank": false,
+      "checks": [
+        {
+          "label": "contains",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "contains",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "复述具体数字",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "line_count_at_least",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "none_of",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 48,
+      "output": "事实=这个月店里流水为四万二，比上月多了八千。  \n情绪=我觉得这个增长是假的，因为退单也多了，我不确定还能撑多久。",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "insight-04",
+      "task": "insight",
+      "points": 4.0,
+      "max_points": 4.0,
+      "ratio": 1.0,
+      "blank": false,
+      "checks": [
+        {
+          "label": "是问句",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "max_units",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "line_count_at_least",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "none_of",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 41,
+      "output": "你希望通过增加粉丝来实现具体的目标吗？比如提升个人品牌影响力、增加商业收益，还是其他目的？",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "insight-05",
+      "task": "insight",
+      "points": 2.0,
+      "max_points": 3.0,
+      "ratio": 0.6666666666666666,
+      "blank": false,
+      "checks": [
+        {
+          "label": "max_units",
+          "ok": false,
+          "points": 0.0
+        },
+        {
+          "label": "点出复购结构",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "不用套话开头",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 99,
+      "output": "知识付费行业的盈利模式已从“以新客为主”的粥促销策略，转向了依赖同一核心课程的高频复购，说明行业正从“单次交易”逐步演化为“持续订阅”或“课程黏性驱动”的变现模式，这一判断值得商务人员在布局产品与定价策略时进行验证与挑战。",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "topic-01",
+      "task": "topic",
+      "points": 3.0,
+      "max_points": 4.0,
+      "ratio": 0.75,
+      "blank": false,
+      "checks": [
+        {
+          "label": "line_count_at_least",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "使用三段式",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "编号",
+          "ok": false,
+          "points": 0.0
+        },
+        {
+          "label": "无流量承诺",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 143,
+      "output": "「零售业职场新人 → 高效管理多条业务线 → 基于AI的统一运营看板」  \n「自媒体内容创作者 → 内容生产与分发效率低 → 自动化内容生成与排期工具」  \n「在校计算机大学生 → 项目实战经验不足 → 虚拟实训项目租赁与认证平台」  \n「中小企业人事经理 → 员工离职率高，招聘成本大 → 智能化人才库与面试自动化系统」  \n「宠物爱好者群体 → 宠物健康监护不及时 → 智能兽医诊疗咨询App」",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "topic-02",
+      "task": "topic",
+      "points": 4.0,
+      "max_points": 4.0,
+      "ratio": 1.0,
+      "blank": false,
+      "checks": [
+        {
+          "label": "line_count_at_least",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "regex",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "有可收费交付物",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "人群不漂移",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 546,
+      "output": "好的，以下是为「小城市、40 岁以上、实体店主」量身定制的 **3 个选题**，每个选题都围绕 **“可收费交付物”** 设计，确保实用、可落地、且符合目标人群的需求与痛点。\n\n---\n\n### **选题 1：《小城店主的“数字营销急救包”》**  \n**核心痛点**：  \n- 传统渠道（本地广告、口碑）效果下降，缺乏线上引流手段；  \n- 社交媒体操作复杂，缺乏内容与投放经验；  \n- 40 岁以上主管时间紧张，无法系统学习新技能。  \n\n**可收费交付物**：  \n✅ **《本地化社交媒体运营SOP》**（含 10 条高转化内容模板 + 抖音/微信视频拍摄指南）  \n✅ **《小城店主专属本地广告投放方案》**（精准投放至 3 公里内目标客群 + 5 大热门平台推荐）  \n✅ **《月度内容策划表》**（按周更新，节省主管时间，提升粉丝互动率）  \n\n**收费模式**：  \n- 基础版：¥298（含 1 个月内容模板 + 投放指南）  \n- 进阶版：¥898（含 3 个月内容+投放方案 + 每周 1 次线上答疑）  \n\n---\n\n### **选题 2：《40 岁店主的“复购客户转化系统”》**  \n**核心痛点**：  \n- 顾客流失率高，老客户转化为会员/复购率不足；  \n- 缺乏系统化的客户管理手段（如会员卡、积分、满减活动）；  \n- 40 岁主管对新技术（如会员系统、短信群发）不熟悉。  \n\n**可收费交付物**：  \n✅ **《本地店铺会员系统搭建手册》**（含 5 步轻松上手 + 3 套会员活动方案）  \n✅ **《客户信息录入与跟进SOP》**（Excel 模板 + 微信群/短信群发话术）  \n✅ **《复购转化话术与优惠策略表》**（针对不同客群的精准营销话术）  \n\n**收费模式**：  \n- 单本手册：¥198  \n- 实操包（含工具+话术+模板）：¥498  \n- 全套服务（含 1 对 1 指导）：¥1,280  \n\n---\n\n### **选题 3：《小城店主的“供应链成本优化方案”》**  \n**核心痛点**：  \n- 原材料/商品采购成本高，缺乏议价或替代渠道；  \n- 依赖传统渠道（如批发市场、代理商），价格不透明；  \n- 40 岁主管缺乏数据分析能力，难判断采购节奏",
+      "meta": {
+        "finish_reason": "length",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "topic-03",
+      "task": "topic",
+      "points": 3.0,
+      "max_points": 4.0,
+      "ratio": 0.75,
+      "blank": false,
+      "checks": [
+        {
+          "label": "line_count_at_least",
+          "ok": false,
+          "points": 0.0
+        },
+        {
+          "label": "regex",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "regex",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "max_units",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 37,
+      "output": "同一素材，写两个互斥的选题角度（一个主张「应该做」，一个主张「不该做」），各一行，不要解释理由。",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "topic-04",
+      "task": "topic",
+      "points": 4.0,
+      "max_points": 4.0,
+      "ratio": 1.0,
+      "blank": false,
+      "checks": [
+        {
+          "label": "line_count_at_least",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "注明亲历",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "max_units",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "none_of",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 21,
+      "output": "让咖啡店的老板用AI写菜单（咖啡店老板2年经历）",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "topic-05",
+      "task": "topic",
+      "points": 4.0,
+      "max_points": 4.0,
+      "ratio": 1.0,
+      "blank": false,
+      "checks": [
+        {
+          "label": "line_count_at_least",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "regex",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "regex",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "none_of",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 280,
+      "output": "1. **该选题不稀缺的原因**：当前市面上AI写作工具众多，诸如ChatGPT、WPS AI、百度文心一言等品牌纷纮亮相，用户评测、对比文章和工具推荐信息源源不断，导致“AI写作工具测评”这一主题在内容生态中已相当常见，缺乏稀缺性。\n\n2. **稀缺版本应具备的条件**：稀缺性体现在**垂直场景+深度数据支撑**上。例如聚焦于“教育领域AI写作工具在作业辅导中的实测效果”或“中小企业营销文案生成工具的成本与产出效率对比”，结合真实用户数据、使用时长、输出质量量化指标（如 plagiarism 检测分数、用户满意度评分等），形成可复证的专业视角。\n\n3. **可用于标题的具体条件**：可放进标题的关键词应体现**特定场景+测评维度+数据支撑**，例如：“教育场景下的AI写作工具实测：从代写检测到学术写作效率，3款工具的差异化表现”。",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "writer-01",
+      "task": "writer",
+      "points": 4.0,
+      "max_points": 4.0,
+      "ratio": 1.0,
+      "blank": false,
+      "checks": [
+        {
+          "label": "min_units",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "max_units",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "出现数字",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "无套话开头",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 163,
+      "output": "昨晚七点半，我站在地铁站台上，看着列车缓缓驶过。站台灯光昏黄，广播声里不停循环着“下一站……”。我不禁想起刚刚手机里收到的消息——去年同款咖啡店，居然还在经营。原来那家叫“时光咖啡”的店，每天只卖120杯。我掏出手机，导航指向门口，心里却惊讶地发现：原来不只是它还有一个分店，此刻正是它开张当天的庆祝仪式。站台另一端，列车终于来了，我踏上去的瞬间，仿佛听见了咖啡香在车厢里徐徐飘散。",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "writer-02",
+      "task": "writer",
+      "points": 5.0,
+      "max_points": 5.0,
+      "ratio": 1.0,
+      "blank": false,
+      "checks": [
+        {
+          "label": "min_units",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "max_units",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "无空泛形容词",
+          "ok": true,
+          "points": 2.0
+        },
+        {
+          "label": "无效果承诺",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 122,
+      "output": "本产品集成高精度传感器阵列，实时采集环境数据。通过内置算法进行信号处理，输出标准化数据格式。支持通过USB接口连接电脑，数据传输速率可达480Mbps。设备工作电压为5V，待机功耗低于0.5W。提供多语言操作界面，兼容Windows和Linux系统。所有功能均通过CE认证，出厂前完成校准。具体参数以包装标注为准。",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "writer-03",
+      "task": "writer",
+      "points": 3.0,
+      "max_points": 3.0,
+      "ratio": 1.0,
+      "blank": false,
+      "checks": [
+        {
+          "label": "line_count_at_least",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "max_units",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "不给模棱两可",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 49,
+      "output": "1. 调查市场行情，设定基础报价区间。  \n2. 明确项目需求与交付时间，计算成本后加价。  \n3. 与客户沟通，协商后确认最终报价。",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "writer-04",
+      "task": "writer",
+      "points": 2.0,
+      "max_points": 3.0,
+      "ratio": 0.6666666666666666,
+      "blank": false,
+      "checks": [
+        {
+          "label": "max_units",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "无口号",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "有具体动作",
+          "ok": false,
+          "points": 0.0
+        }
+      ],
+      "output_units": 31,
+      "output": "当你只对被说中的人才成立判断时，请立刻查证事实，冷静分析后再下结论。",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "writer-05",
+      "task": "writer",
+      "points": 2.0,
+      "max_points": 4.0,
+      "ratio": 0.5,
+      "blank": false,
+      "checks": [
+        {
+          "label": "max_units",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "去掉夸大承诺",
+          "ok": false,
+          "points": 0.0
+        },
+        {
+          "label": "line_count_at_least",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 17,
+      "output": "这个方法论帮助你三个月提升内容能力。",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "guard-01",
+      "task": "guard",
+      "points": 4.0,
+      "max_points": 4.0,
+      "ratio": 1.0,
+      "blank": false,
+      "checks": [
+        {
+          "label": "contains",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "区分两类风险",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "引用位置",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "不主张整删",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 386,
+      "output": "**① 平台机器可能识别的关键信息**\n\n| 识别要素 | 原文片段 |\n|----------|----------|\n| 效果声称 | “三天见效” |\n| 退款承诺 | “无效退款” |\n| 获取方式 | “加微信领取内部资料” |\n| 数量限制 | “限量 50 份” |\n| 广告/促销标识 | 整体句式（夸张、限量、立即行动） |\n\n---\n\n**② 内容本身的实质问题**\n\n| 问题类型 | 具体表现 | 原文片段 |\n|----------|----------|----------|\n| **夸大其词 / 误导性声明** | 未提供任何科学依据或临床数据支撑“三天见效”的快速疗效，可能构成不实承诺。 | “三天见效” |\n| **潜在的欺诈或误导退款承诺** | “无效退款”表面上看似有保障，但未说明退款条件、流程或时间，容易让人产生误解。 | “无效退款” |\n| **暗示私密渠道获取信息** | “加微信领取内部资料”暗示通过私微信获取额外信息，可能规避平台审核，存在信息不透明或隐私泄露的风险。 | “加微信领取内部资料” |\n| **制造稀缺性（限量）** | “限量 50 份”制造人为稀缺感，常用于刺激用户立即行动，属于常见的营销话术手段。 | “限量 50 份” |\n| **缺乏产品或服务具体描述** | 文案未说明具体产品、服务内容、适用范围或使用方法，信息不完整。 | 整段文案 |\n| **可能违反广告法规** | 未注明广告性质、科学成分或参考来源，可能违反《广告法》关于真实宣传的要求。 | 整段文案 |",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "guard-02",
+      "task": "guard",
+      "points": 4.0,
+      "max_points": 4.0,
+      "ratio": 1.0,
+      "blank": false,
+      "checks": [
+        {
+          "label": "contains",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "line_count_at_least",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "max_units",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "原句中的违规词不要出现在改写里",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 22,
+      "output": "该产品可帮助缓解轻度头痛 → 该产品可缓解轻度头痛。",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "guard-03",
+      "task": "guard",
+      "points": 2.0,
+      "max_points": 3.0,
+      "ratio": 0.6666666666666666,
+      "blank": false,
+      "checks": [
+        {
+          "label": "给出归类",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "max_units",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "理由落在具体机制",
+          "ok": false,
+          "points": 0.0
+        }
+      ],
+      "output_units": 46,
+      "output": "实质层风险。标题暗示私域流量可能因监管收紧或模型滥用而导致收入风险，涉及业务模式本身的系统性问题。",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "guard-04",
+      "task": "guard",
+      "points": 3.0,
+      "max_points": 4.0,
+      "ratio": 0.75,
+      "blank": false,
+      "checks": [
+        {
+          "label": "line_count_at_least",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "regex",
+          "ok": false,
+          "points": 0.0
+        },
+        {
+          "label": "regex",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "none_of",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 135,
+      "output": "需要做什么：仔细阅读原文，准确把握核心观点和表达方式，标明出处并在必要时添加自己的理解或延伸。\n\n不能做什么：直接抄袭原文不加说明，篡改原文意思，或将他人观点毫无区分地混入自己的文字中。\n\n替代写法：“[作者姓名]在《文章标题》中指出，‘原文关键句’（出处：期刊/网站，发表时间），这与我的观点一致，进一步可从…角度进行延伸分析。”",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    },
+    {
+      "id": "guard-05",
+      "task": "guard",
+      "points": 4.0,
+      "max_points": 4.0,
+      "ratio": 1.0,
+      "blank": false,
+      "checks": [
+        {
+          "label": "line_count_at_least",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "regex",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "regex",
+          "ok": true,
+          "points": 1.0
+        },
+        {
+          "label": "不做展开建议",
+          "ok": true,
+          "points": 1.0
+        }
+      ],
+      "output_units": 57,
+      "output": "1. 过度强调高收入诱导用户加微信，容易被认定为诈骗或传销嫌疑。  \n2. 使用“变现8万”“开放20个名额”等夸大话术，违反小红书虚假宣传规则。",
+      "meta": {
+        "finish_reason": "stop",
+        "reasoning_only": false,
+        "model_returned": "poolside/laguna-xs-2.1"
+      }
+    }
+  ]
+}

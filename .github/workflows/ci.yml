@@ -50,6 +50,12 @@ jobs:
           sys.exit(1 if bad else 0)
           PY
 
+      - name: Results table regenerates
+        run: |
+          python3 harness/report.py --out /tmp/TABLE.md
+          test -s /tmp/TABLE.md
+          diff -q /tmp/TABLE.md results/TABLE.md && echo "committed table is reproducible"
+
       - name: Budget reproduces
         run: |
           python3 compute/budget.py --scenario full --json > /tmp/budget.json

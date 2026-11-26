@@ -110,6 +110,23 @@ python3 scripts/plot_loss.py --log adapters/seed0/trainer_state.json \
 
 No matplotlib: the curve is generated as SVG by a stdlib script, so it can be regenerated on any machine and diffed in review.
 
+## First measured numbers (dev-set scale, published as-is)
+
+| run | overall | guard | insight | topic | writer |
+|---|---|---|---|---|---|
+| `poolside/laguna-xs-2.1` · raw | 0.843 | 0.883 | 0.753 | 0.900 | 0.833 |
+| `poolside/laguna-xs-2.1` · doctrine | 0.878 | 0.950 | 0.870 | 0.950 | 0.743 |
+
+Full table with per-task 95% CIs: [`results/TABLE.md`](results/TABLE.md), regenerated from the committed report files by `make table`.
+
+Three things this run actually told us, and they are not flattering:
+
+1. **The dev set saturates.** A *small* model scores 0.84 with no doctrine prompt. A rubric that a weak model nearly aces cannot detect the improvement H1 is about — the dev set needs harder items before it can support any claim.
+2. **`doctrine − raw = +0.035`, with CIs that overlap almost entirely.** On 20 items that is indistinguishable from noise. Reported because the pre-registration says so.
+3. **Two rubric bugs the first real run exposed**, both fixed and logged as amendments in [`results/README.md`](results/README.md): a ban on the string `第一` was failing a correct answer for containing `第一人称`, and length caps were punishing answers whose prompt never stated a length budget.
+
+What did *not* fail: no blank responses, no truncation-driven zeros on the final run, and the harness scored two hosted models' shapes (`content` present, `content: null` with reasoning only) without crashing.
+
 ## Compute
 
 Full bill, computed from a visible assumption block: [`compute/GPU-BUDGET.md`](compute/GPU-BUDGET.md).
@@ -138,7 +155,8 @@ Read that last row honestly: **800 GPU-hours is not what this project needs at i
 | fixed prompt conditions (raw / doctrine) | done — `harness/prompts/` |
 | pre-registered protocol | done ([`results/README.md`](results/README.md)) |
 | GPU-hour accounting | done, reproducible |
-| baseline numbers (prompt-only Qwen3-8B / Llama-3.1-8B) | **not run yet** — needs GPU access |
+| dev-set numbers on a hosted open model | **measured** — 20 items, dev-set scale only, [`results/TABLE.md`](results/TABLE.md) |
+| baseline numbers (prompt-only Qwen3-8B / Llama-3.1-8B) | **not run yet** — pre-registered baselines, needs those specific models |
 | SFT runs, ablations, held-out set | **not run yet** — needs GPU access |
 
 No number in this README is measured yet, and the badges say so. When baselines land, `results/` gets a table and this section gets a different sentence.

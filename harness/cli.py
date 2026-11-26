@@ -27,6 +27,14 @@ from evalkit import (  # noqa: E402
 )
 
 
+def build_model(args):
+    """Construct the model from CLI args. Separate from main() so the wiring is
+    testable without a network call."""
+    if args.model == "stub":
+        return StubModel()
+    return OpenAICompatModel(name=args.model_name, base_url=args.base_url, model=args.model_name)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="molu-bench harness")
     ap.add_argument("--data", default="data/dev.jsonl")
@@ -49,10 +57,7 @@ def main() -> int:
         if not items:
             raise SystemExit(f"no items for tasks: {sorted(keep)}")
 
-    if args.model == "stub":
-        model = StubModel()
-    else:
-        model = OpenAICompatModel(name=args.model_name, base_url=args.base_url)
+    model = build_model(args)
 
     report = run(model, items, max_tokens=args.max_tokens, verbose=not args.quiet,
                  prompter=Prompter(args.prompt_mode))

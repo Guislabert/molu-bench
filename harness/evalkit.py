@@ -20,6 +20,7 @@ import re
 import statistics
 import sys
 import time
+import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
 from typing import Any
@@ -97,8 +98,31 @@ class StubModel(Model):
         )
 
 
+def _http_transport(url: str, body: bytes, headers: dict, timeout: int) -> dict:
+    req = urllib.request.Request(url, data=body, headers=headers)
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310
+            return json.load(resp)
+    except urllib.error.HTTPError as exc:
+        # Include the body: "HTTP 404" alone sends people looking in the wrong
+        # place, and providers put the actual reason in that body.
+        detail = exc.read()[:400].decode("utf-8", "replace")
+        raise SystemExit(f"{url} -> HTTP {exc.code}: {detail}") from exc
+
+
 class OpenAICompatModel(Model):
-    """Any /v1/chat/completions endpoint: vLLM, SGLang, Ollama, OpenRouter…"""
+    """Any /v1/chat/completions endpoint: vLLM, SGLang, Ollama, OpenRouter…
+
+    Two provider behaviours this has to survive, both observed in the wild:
+
+    1. `content: null` — a reasoning model can spend the whole max_tokens budget
+       on reasoning_content and return no answer. That is a blank response, it
+       is recorded as one, and the reasoning text is NOT substituted as the
+       answer (substituting it would measure the wrong string and quietly
+       inflate the score).
+    2. `finish_reason: "length"` — truncation is recorded per row so a low score
+       can be traced to the budget instead of being read as a capability gap.
+    """
 
     def __init__(
         self,
@@ -108,6 +132,7 @@ class OpenAICompatModel(Model):
         api_key: str | None = None,
         temperature: float = 0.0,
         timeout: int = 180,
+        transport=None,
     ) -> None:
         self.name = name
         self.base_url = base_url.rstrip("/")
@@ -115,8 +140,10 @@ class OpenAICompatModel(Model):
         self.api_key = api_key or os.environ.get("MOLU_BENCH_API_KEY", "")
         self.temperature = temperature
         self.timeout = timeout
+        self.transport = transport or _http_transport
+        self.last_meta: dict[str, Any] = {}
 
-    def generate(self, prompt: str, max_tokens: int = 800) -> str:
+    def _payload(self, prompt: str, max_tokens: int) -> dict:
         body = json.dumps(
             {
                 "model": self.model,
@@ -125,17 +152,24 @@ class OpenAICompatModel(Model):
                 "max_tokens": max_tokens,
             }
         ).encode()
-        req = urllib.request.Request(
-            f"{self.base_url}/chat/completions",
-            data=body,
-            headers={
-                "Content-Type": "application/json",
-                **({"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}),
-            },
-        )
-        with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310
-            payload = json.load(resp)
-        return payload["choices"][0]["message"]["content"]
+        headers = {"Content-Type": "application/json"}
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+        return self.transport(f"{self.base_url}/chat/completions", body, headers, self.timeout)
+
+    def generate(self, prompt: str, max_tokens: int = 800) -> str:
+        payload = self._payload(prompt, max_tokens)
+        choices = payload.get("choices") or [{}]
+        choice = choices[0] or {}
+        message = choice.get("message") or {}
+        text = (message.get("content") or "").strip()
+        has_reasoning = bool(message.get("reasoning_content"))
+        self.last_meta = {
+            "finish_reason": choice.get("finish_reason"),
+            "reasoning_only": has_reasoning and not text,
+            "model_returned": payload.get("model"),
+        }
+        return text
 
 
 # --------------------------------------------------------------------------
@@ -304,6 +338,9 @@ def run(
         output = model.generate(prompter(item), max_tokens=max_tokens)
         row = score_output(item, output)
         row["output"] = output
+        meta = getattr(model, "last_meta", None)
+        if meta:
+            row["meta"] = dict(meta)
         rows.append(row)
         if verbose:
             print(f"{row['id']:>14}  {row['points']:>4.1f}/{row['max_points']:<4.0f}", file=sys.stderr)
@@ -314,6 +351,8 @@ def run(
         "items": len(items),
         "elapsed_s": round(elapsed, 2),
         "blank_responses": sum(1 for r in rows if r.get("blank")),
+        "truncated_responses": sum(1 for r in rows if (r.get("meta") or {}).get("finish_reason") == "length"),
+        "reasoning_only_responses": sum(1 for r in rows if (r.get("meta") or {}).get("reasoning_only")),
         "summary": summarize(rows),
         "rows": rows,
     }
