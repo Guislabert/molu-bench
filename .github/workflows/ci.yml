@@ -1,0 +1,55 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  harness-and-budget:
+    name: Harness smoke + budget reproducibility
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # No dependencies on purpose: if a reviewer cannot run this in one step,
+      # the numbers are not reproducible.
+      - name: Smoke test (offline stub model)
+        run: python3 harness/cli.py --model stub --data data/dev.jsonl --quiet
+
+      - name: Dev set integrity
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, sys
+          bad = []
+          ids = set()
+          for i, line in enumerate(pathlib.Path("data/dev.jsonl").read_text().splitlines(), 1):
+              if not line.strip():
+                  continue
+              d = json.loads(line)
+              if d["id"] in ids:
+                  bad.append(f"line {i}: duplicate id {d['id']}")
+              ids.add(d["id"])
+              if not d.get("checks"):
+                  bad.append(f"line {i}: {d['id']} has no checks")
+              for c in d.get("checks", []):
+                  if c["kind"] not in {"contains","not_contains","all_of","none_of","regex",
+                                       "min_units","max_units","line_count_at_least"}:
+                      bad.append(f"line {i}: {d['id']} unknown check kind {c['kind']}")
+          print(f"{len(ids)} items checked")
+          sys.exit(1 if bad else 0)
+          PY
+
+      - name: Budget reproduces
+        run: |
+          python3 compute/budget.py --scenario full --json > /tmp/budget.json
+          python3 - <<'PY'
+          import json
+          b = json.load(open("/tmp/budget.json"))
+          assert b["with_buffer"] > 0, "budget produced no hours"
+          print(f"full scenario: {b['with_buffer']} GPU-hours")
+          PY
