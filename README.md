@@ -36,7 +36,7 @@ A negative result here is still a result: "16k curated units of Chinese content 
 ## What runs today
 
 ```bash
-make test       # 24 scorer unit tests, no network, no model
+make test       # 31 unit tests (scorer + data pipeline), no network, no model
 make smoke      # 20-item dev set, offline stub model, no API key needed
 make budget     # recompute the GPU-hour bill from the assumption block
 make ci         # all of the above, exactly what .github/workflows/ci.yml runs
@@ -76,6 +76,17 @@ Aggregation: per-task mean rubric ratio, with a 1,000-resample bootstrap 95% CI 
 
 **A blank response earns zero, including on negative checks.** Found by a test, not by review: an output that says nothing "does not promise traffic" and "does not fabricate a case", so a silent model used to collect points for restraint it never exercised. Blank rows are now zeroed, flagged, and counted separately in every report (`blank_responses`).
 
+## From this repo to the first real table
+
+[`docs/RUNBOOK.md`](docs/RUNBOOK.md) is the operational version: a zero-GPU path that produces the API baseline row for under $5, the single-A100 path (serve → four sweeps → SFT → serve adapter), cost arithmetic you fill in with today's rate, and the six failure modes that usually bite first.
+
+```bash
+python3 scripts/build_sft.py --units units.jsonl --out sft.jsonl --stats    # CPU, corpus stays local
+python3 scripts/sft_lora.py  --train sft.jsonl --out adapters/seed0 --seed 0 --dry-run
+```
+
+`build_sft.py` validates rows, estimates tokens per epoch, and refuses to write when the row count drifts more than 5% from the 16,227 the GPU bill assumes — a silent 300-row dataset would make every downstream hour wrong. `sft_lora.py` is the GPU half and is not covered by CI; its data validation is reachable through `--dry-run` and is tested.
+
 ## Compute
 
 Full bill, computed from a visible assumption block: [`compute/GPU-BUDGET.md`](compute/GPU-BUDGET.md).
@@ -99,7 +110,7 @@ Read that last row honestly: **800 GPU-hours is not what this project needs at i
 
 | piece | state |
 |---|---|
-| harness + scorer + bootstrap CI | working, 24 unit tests in CI on every push |
+| harness + scorer + bootstrap CI | working, 31 unit tests in CI on every push |
 | 20-item dev set across 4 tasks | done, deliberately small |
 | fixed prompt conditions (raw / doctrine) | done — `harness/prompts/` |
 | pre-registered protocol | done ([`results/README.md`](results/README.md)) |

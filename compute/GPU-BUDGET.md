@@ -79,6 +79,8 @@ To spend 800 hours honestly, the scope has to change first: **10× the corpus** 
 | raw total | | | **483.98** |
 | ×1.5 buffer | | | **725.97** |
 
+Operational steps, pricing arithmetic and failure modes: [`../docs/RUNBOOK.md`](../docs/RUNBOOK.md).
+
 ## Reading the bill
 
 - **Ask for 70–85 hours.** That covers the publishable result at the current data size, including ablations and a full fine-tune baseline.
