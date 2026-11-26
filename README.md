@@ -44,6 +44,7 @@ A negative result here is still a result: "16k curated units of Chinese content 
 | [`scripts/`](scripts) | `build_sft.py` (CPU), `sft_lora.py` (GPU), `plot_loss.py` (SVG curve) |
 | [`configs/`](configs) | pre-registered hyperparameters as a diffable file |
 | [`docs/RUNBOOK.md`](docs/RUNBOOK.md) | no GPU → API baseline for <$5 → one A100 → first table |
+| [`docs/GRANT.md`](docs/GRANT.md) | one-page compute request: what exists, what the hours buy, what ships either way |
 | [`results/`](results) | protocol + measured outputs; ships empty on purpose |
 
 ## What runs today
