@@ -19,6 +19,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
 from evalkit import (  # noqa: E402
     OpenAICompatModel,
+    Prompter,
     StubModel,
     load_items,
     print_table,
@@ -33,6 +34,8 @@ def main() -> int:
                     help="stub = offline smoke test, local/remote = OpenAI-compatible endpoint")
     ap.add_argument("--base-url", default="http://localhost:8000/v1")
     ap.add_argument("--model-name", default="local-model")
+    ap.add_argument("--prompt-mode", default="raw", choices=["raw", "doctrine"],
+                    help="raw = item prompt only; doctrine = prepend the molu module prompt")
     ap.add_argument("--max-tokens", type=int, default=800)
     ap.add_argument("--tasks", default="", help="comma separated task filter, e.g. insight,topic")
     ap.add_argument("--out", default="", help="write the full JSON report here")
@@ -51,7 +54,8 @@ def main() -> int:
     else:
         model = OpenAICompatModel(name=args.model_name, base_url=args.base_url)
 
-    report = run(model, items, max_tokens=args.max_tokens, verbose=not args.quiet)
+    report = run(model, items, max_tokens=args.max_tokens, verbose=not args.quiet,
+                 prompter=Prompter(args.prompt_mode))
     print_table(report)
 
     if args.out:

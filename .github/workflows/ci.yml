@@ -18,8 +18,14 @@ jobs:
 
       # No dependencies on purpose: if a reviewer cannot run this in one step,
       # the numbers are not reproducible.
-      - name: Smoke test (offline stub model)
+      - name: Scorer unit tests
+        run: python3 -m unittest discover -s tests -v
+
+      - name: Smoke test (offline stub model, raw prompts)
         run: python3 harness/cli.py --model stub --data data/dev.jsonl --quiet
+
+      - name: Smoke test (doctrine prompts)
+        run: python3 harness/cli.py --model stub --data data/dev.jsonl --prompt-mode doctrine --quiet
 
       - name: Dev set integrity
         run: |

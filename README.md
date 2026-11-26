@@ -36,10 +36,20 @@ A negative result here is still a result: "16k curated units of Chinese content 
 ## What runs today
 
 ```bash
+make test       # 24 scorer unit tests, no network, no model
 make smoke      # 20-item dev set, offline stub model, no API key needed
 make budget     # recompute the GPU-hour bill from the assumption block
-make ci         # both, exactly what .github/workflows/ci.yml runs
+make ci         # all of the above, exactly what .github/workflows/ci.yml runs
 ```
+
+Two prompt conditions, both committed before any run:
+
+| mode | what the model sees |
+|---|---|
+| `--prompt-mode raw` | the item prompt alone — an off-the-shelf assistant |
+| `--prompt-mode doctrine` | the molu module prompt from `harness/prompts/<task>.md` prepended |
+
+Without a recorded prompt condition, "fine-tuning beat prompting" is not a comparable claim, and a prompt tuned after seeing results is cheating nobody can detect. The doctrine packs live in version control for that reason.
 
 Score any OpenAI-compatible endpoint (vLLM / SGLang / Ollama / lmdeploy / OpenRouter):
 
@@ -64,6 +74,8 @@ Deterministic checks, not an LLM judge, as the default:
 
 Aggregation: per-task mean rubric ratio, with a 1,000-resample bootstrap 95% CI (seeded, `seed=1723`). An LLM judge is documented as an opt-in, biased, separately-reported pass — not a replacement for the deterministic score. Judges are how benchmarks quietly become uncomparable, so the judge column never overwrites the rubric column.
 
+**A blank response earns zero, including on negative checks.** Found by a test, not by review: an output that says nothing "does not promise traffic" and "does not fabricate a case", so a silent model used to collect points for restraint it never exercised. Blank rows are now zeroed, flagged, and counted separately in every report (`blank_responses`).
+
 ## Compute
 
 Full bill, computed from a visible assumption block: [`compute/GPU-BUDGET.md`](compute/GPU-BUDGET.md).
@@ -87,8 +99,9 @@ Read that last row honestly: **800 GPU-hours is not what this project needs at i
 
 | piece | state |
 |---|---|
-| harness + scorer + bootstrap CI | working, tested in CI on every push |
+| harness + scorer + bootstrap CI | working, 24 unit tests in CI on every push |
 | 20-item dev set across 4 tasks | done, deliberately small |
+| fixed prompt conditions (raw / doctrine) | done — `harness/prompts/` |
 | pre-registered protocol | done ([`results/README.md`](results/README.md)) |
 | GPU-hour accounting | done, reproducible |
 | baseline numbers (prompt-only Qwen3-8B / Llama-3.1-8B) | **not run yet** — needs GPU access |

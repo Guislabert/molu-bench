@@ -27,7 +27,7 @@ Written **before** any baseline or fine-tune number exists, so that the results 
 2. **Training**: LoRA r=16, α=32, lr 1e-4, 3 epochs, seed-report. Full fine-tune of the 8B as a cost-of-adaptation reference.
 3. **Eval**: 400 items (4 tasks × 100), temperature 0, one sample per item, deterministic rubric. `max_tokens` 800 so truncation is visible rather than silently scored.
 4. **Metrics**: rubric ratio per task (primary), pass rate per check (secondary), bootstrap 95% CI on 1,000 resamples with `seed=1723`.
-5. **Stopping rule**: a run is complete when all 400 items return a non-empty response; empty responses count as 0 and are reported as a separate count. No retry-until-non-empty.
+5. **Stopping rule**: a run is complete when all 400 items return a non-empty response; an empty response scores **0 on every check, including negative checks**, is flagged per row, and is counted as `blank_responses` in the report. No retry-until-non-empty: a model that fails to answer is a result, not an outage.
 6. **Held-out set**: a separate 100-item set authored after training-data freeze, never inspected during training.
 
 ## Gating numbers before we trust anything
@@ -40,7 +40,7 @@ Written **before** any baseline or fine-tune number exists, so that the results 
 
 | date | change | reason |
 |---|---|---|
-| (initial) | file created | before any run |
+| amend | 2026-11-26 | reclassified blank-output scoring | a test showed empty strings collected points from `none_of` checks; blanks now score zero, are flagged, and are counted |
 
 ## Status
 

@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import math
 import os
+import pathlib
 import random
 import re
 import statistics
@@ -138,6 +139,42 @@ class OpenAICompatModel(Model):
 
 
 # --------------------------------------------------------------------------
+# prompt conditions
+# --------------------------------------------------------------------------
+
+
+class Prompter:
+    """Two experimental conditions, both fixed in-repo before any run.
+
+    raw       - the item prompt alone: what an off-the-shelf assistant sees.
+    doctrine  - the molu module prompt prepended: what a Skill-equipped agent
+                sees. Loaded from harness/prompts/<task>.md.
+
+    Fixing both in version control is the point: without a recorded prompt
+    condition, "fine-tuning beat prompting" is not a comparable claim, and a
+    prompt tuned after seeing results is unrecorded cheating.
+    """
+
+    def __init__(self, mode: str = "raw", prompts_dir: str = "harness/prompts") -> None:
+        if mode not in {"raw", "doctrine"}:
+            raise SystemExit(f"unknown prompt mode: {mode}")
+        self.mode = mode
+        self.doctrine: dict[str, str] = {}
+        if mode == "doctrine":
+            base = pathlib.Path(prompts_dir)
+            for task in ("insight", "topic", "writer", "guard"):
+                f = base / f"{task}.md"
+                if not f.exists():
+                    raise SystemExit(f"missing doctrine prompt: {f}")
+                self.doctrine[task] = f.read_text(encoding="utf-8").strip()
+
+    def __call__(self, item: Item) -> str:
+        if self.mode == "raw":
+            return item.prompt
+        return f"{self.doctrine[item.task]}\n\n---\n\n任务 / Task\n\n{item.prompt}"
+
+
+# --------------------------------------------------------------------------
 # scoring — deterministic checks only
 # --------------------------------------------------------------------------
 
@@ -176,6 +213,26 @@ def run_check(check: dict[str, Any], output: str) -> tuple[float, bool]:
 
 
 def score_output(item: Item, output: str) -> dict[str, Any]:
+    blank = not output.strip()
+    if blank:
+        # A blank response must not collect points from negative checks: an
+        # item that says nothing "does not promise traffic" and "does not
+        # fabricate a case" for free. Zeroing every check and flagging the row
+        # keeps that failure visible instead of profitable.
+        return {
+            "id": item.id,
+            "task": item.task,
+            "points": 0.0,
+            "max_points": item.max_points,
+            "ratio": 0.0,
+            "blank": True,
+            "checks": [
+                {"label": c.get("label", c["kind"]), "ok": False, "points": 0.0,
+                 "note": "blank output"}
+                for c in item.checks
+            ],
+            "output_units": 0,
+        }
     total = 0.0
     detail = []
     for check in item.checks:
@@ -188,6 +245,7 @@ def score_output(item: Item, output: str) -> dict[str, Any]:
         "points": total,
         "max_points": item.max_points,
         "ratio": (total / item.max_points) if item.max_points else 0.0,
+        "blank": False,
         "checks": detail,
         "output_units": _units(output),
     }
@@ -232,11 +290,18 @@ def summarize(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return out
 
 
-def run(model: Model, items: list[Item], max_tokens: int = 800, verbose: bool = True) -> dict[str, Any]:
+def run(
+    model: Model,
+    items: list[Item],
+    max_tokens: int = 800,
+    verbose: bool = True,
+    prompter: Prompter | None = None,
+) -> dict[str, Any]:
+    prompter = prompter or Prompter("raw")
     rows = []
     started = time.time()
     for item in items:
-        output = model.generate(item.prompt, max_tokens=max_tokens)
+        output = model.generate(prompter(item), max_tokens=max_tokens)
         row = score_output(item, output)
         row["output"] = output
         rows.append(row)
@@ -245,15 +310,19 @@ def run(model: Model, items: list[Item], max_tokens: int = 800, verbose: bool = 
     elapsed = time.time() - started
     return {
         "model": model.name,
+        "prompt_mode": prompter.mode,
         "items": len(items),
         "elapsed_s": round(elapsed, 2),
+        "blank_responses": sum(1 for r in rows if r.get("blank")),
         "summary": summarize(rows),
         "rows": rows,
     }
 
 
 def print_table(report: dict[str, Any]) -> None:
-    print(f"\nmodel: {report['model']}   items: {report['items']}   wall: {report['elapsed_s']}s\n")
+    print(f"\nmodel: {report['model']}   prompt: {report.get('prompt_mode', 'raw')}   "
+          f"items: {report['items']}   blank: {report.get('blank_responses', 0)}   "
+          f"wall: {report['elapsed_s']}s\n")
     print(f"{'task':<10} {'n':>3} {'score':>7} {'95% CI':>16} {'checks':>10}")
     for row in report["summary"]:
         ci = f"[{row['ci95'][0]:.3f}, {row['ci95'][1]:.3f}]"
