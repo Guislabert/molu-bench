@@ -23,7 +23,8 @@ make ci     # 35 unit tests, offline stub run, both prompt conditions, recompute
 | corpus → SFT converter (refuses on silent row-count drift) | shipped, tested | [`scripts/build_sft.py`](scripts/build_sft.py) |
 | LoRA training entry point + pre-registered config | shipped; `--dry-run` tested, GPU path untested | [`scripts/sft_lora.py`](scripts/sft_lora.py), [`configs/`](configs) |
 | loss-curve generator (SVG, stdlib) | shipped, tested | [`scripts/plot_loss.py`](scripts/plot_loss.py) |
-| measured baseline numbers | **not yet** — needs an endpoint or a GPU | [`results/`](results) |
+| first measured numbers (20-item dev set, hosted open model) | shipped at dev-set scale: raw 0.843 / doctrine 0.878 | [`results/TABLE.md`](results/TABLE.md) |
+| pre-registered baselines (Qwen3-8B / Llama-3.1-8B) | **not yet** — needs a GPU or a host serving those weights | [`results/`](results) |
 | fine-tuned adapter + before/after table | **not yet** — this is what the hours buy | — |
 
 ## 2. What the hours buy
@@ -70,7 +71,8 @@ Cost of the honest alternative: the API-only baseline above costs **under $5** a
 
 ## 6. What a reviewer will find wrong, said first
 
-- **No measured number exists yet.** The dev set has 20 items; per-task CIs at that size are wide by construction, and `make smoke` prints them so the width is visible rather than argued about.
+- **The dev set saturates.** A small hosted model already scores 0.84 (`raw`) / 0.88 (`doctrine`) on 20 items, so it cannot discriminate — the H1 test needs the 400-item set, and the dev set is labelled a smoke test. Per-task CIs at 5 items are wide by construction, and `make smoke` prints them so the width is visible rather than argued about.
+- **The committed numbers are not the pre-registered baselines.** They came from a hosted endpoint that serves a different open model; the named baselines need a GPU or a host carrying those weights.
 - **Single annotator** wrote the dev set. Inter-annotator agreement is an open item for the larger set.
 - **The GPU training path is not covered by CI** (no GPU in CI). Its data validation and config loading are tested via `--dry-run`; the training loop itself is reviewed, not executed.
 - **20 items is a smoke test**, not a benchmark. Task-level claims wait for the 400-item set.

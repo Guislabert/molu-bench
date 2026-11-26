@@ -51,4 +51,6 @@ LoRA r=16, α=32, lr 1e-4, cosine schedule, 3 epochs, 3 seeds, bf16, max length 
 
 ## Status
 
-No measured number exists yet. `results/*.json` will only ever contain files written by `harness/cli.py`, i.e. by an actual model call, which is why the folder ships with a README and nothing else.
+Dev-set numbers now exist (20 items, `poolside/laguna-xs-2.1`: raw 0.843 / doctrine 0.878) and they are published at the scale they were produced at — see [`results/TABLE.md`](results/TABLE.md). They are **not** the pre-registered baselines (Qwen3-8B / Llama-3.1-8B) and they cannot support H1: the dev set saturates at 0.84 for a small model, which is why amend 3 moves the H1 test to the 400-item set.
+
+`results/*.json` only ever contains files written by `harness/cli.py`, i.e. by an actual model call, and each records the model string, prompt mode, item count and wall time that produced it.
